@@ -104,3 +104,17 @@ app.delete("/tasks/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+app.get("/healthz", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
+app.get("/ready", async (req, res) => {
+    try {
+        await pool.query("SELECT 1");
+        res.status(200).json({ status: "ready" });
+    } catch (error) {
+        res.status(503).json({ status: "database error" });
+    }
+});

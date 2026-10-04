@@ -1,5 +1,5 @@
 async function getProjects() {
-    const url = "http://localhost:3000/projects";
+    const url = "/projects";
     try {
         const reponse = await fetch(url);
         if (!reponse.ok) {
@@ -16,11 +16,11 @@ async function getProjects() {
 
         for (const project of resultat) {
 
-        texte_tasks= await getTasks(project.id);
-        tmp_texte=texte_tasks;
-        projectsplace.innerHTML += `<div class="project-id"><h3>${project.name}</h3> <p>${project.description} </p>
-        <button class="button-delete-project" data-id=${project.id}> Supprimer le projet</button></br>
-        <button class="button-post-tasks" data-id=${project.id}> Ajouter une tâche</button>
+        let texte_tasks= await getTasks(project.id);
+        let tmp_texte=texte_tasks;
+        projectsplace.innerHTML += `<div class="project-id"><h3>${escapeHTML(project.name)}</h3> <p>${escapeHTML(project.description)} </p>
+        <button class="button-delete-project" data-id="${project.id}"> Supprimer le projet</button></br>
+        <button class="button-post-tasks" data-id="${project.id}"> Ajouter une tâche</button>
         <label>Nom de la tâche</label> <input type="text" class="tache-nom">
         <label>Description de la tâche</label> <input type="text" class="tache-description">
         <select class="tache-status"><option value="TODO">À faire</option><option value="IN_PROGRESS">En cours</option><option value="DONE">Terminée</option></select>
@@ -44,7 +44,7 @@ async function getProjects() {
 
 
 async function postProjects(name, description) {
-    const url = "http://localhost:3000/projects";
+    const url = "/projects";
     try {
         const reponse = await fetch(url, {
         method: "POST",
@@ -65,7 +65,7 @@ async function postProjects(name, description) {
 
 
 async function deleteProjects(id) {
-    const url = `http://localhost:3000/projects/${id}`;
+    const url = `/projects/${id}`;
     try {
         const reponse = await fetch(url, {
         method: "DELETE"
@@ -84,7 +84,7 @@ async function deleteProjects(id) {
 
 
 async function getTasks(id) {
-    const url = `http://localhost:3000/projects/${id}/tasks`;
+    const url = `/projects/${id}/tasks`;
 
     try {
         const reponse = await fetch(url);
@@ -99,10 +99,10 @@ async function getTasks(id) {
         let texte = "";
     
         resultat.forEach(tasks => {
-            texte += `<h2>${tasks.name}</h2>
-            <p>Description : ${tasks.description}</p>
-            <p>Statut : ${tasks.status}</p>
-            <p>Priorité : ${tasks.priority}</p>
+            texte += `<h4>${escapeHTML(tasks.name)}</h4>
+            <p>Description : ${escapeHTML(tasks.description)}</p>
+            <p>Statut : ${escapeHTML(tasks.status)}</p>
+            <p>Priorité : ${escapeHTML(tasks.priority)}</p>
             <button class="button-delete-tache" data-id=${tasks.id}> Supprimer la tâche</button>`;
         });
 
@@ -116,7 +116,7 @@ async function getTasks(id) {
 }
 
 async function postTasks(project_id, name, description, status, priority) {
-    const url = `http://localhost:3000/projects/${project_id}/tasks`;
+    const url = `/projects/${project_id}/tasks`;
     try {
         const reponse = await fetch(url, {
         method: "POST",
@@ -137,7 +137,7 @@ async function postTasks(project_id, name, description, status, priority) {
 
 
 async function deleteTasks(id) {
-    const url = `http://localhost:3000/tasks/${id}`;
+    const url = `/tasks/${id}`;
     try {
         const reponse = await fetch(url, {
         method: "DELETE"
@@ -192,6 +192,12 @@ function setupPostButtons_tasks() {
     });
 }
 
+
+function escapeHTML(texte) {
+    const div = document.createElement("div");
+    div.textContent = texte;
+    return div.innerHTML;
+}
 
 
 

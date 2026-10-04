@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-deployment
+  namespace: application
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: front
+
+  template:
+    metadata:
+      labels:
+        app: front
+
+    spec:
+      containers:
+      - name: front
+        image: front-img
+        imagePullPolicy: Never
+        ports:
+            - containerPort: 80
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front
+  namespace: application
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: front
+
+  ports:
+    - port: 80
+      targetPort: 80
