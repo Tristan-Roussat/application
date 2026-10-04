@@ -1,0 +1,43 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Récupurer code
+      uses: actions/checkout@v4
+      
+    - name: Construire l'image frontend
+      run: docker build ./frontend -t frontend:latest
+
+    - name: Construire l'image backend
+      run: docker build ./backend -t backend:latest
+
+    - name: Trivy vulnerability scanner sur le backend
+      uses: aquasecurity/trivy-action@v0.36.0
+      with:
+        image-ref: "backend:latest"
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Trivy vulnerability scanner sur la frontend
+      uses: aquasecurity/trivy-action@v0.36.0
+      with:
+        image-ref: "frontend:latest"
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
